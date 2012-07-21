@@ -46,6 +46,10 @@ parser.add_argument('-U', '--user-agent',
         default=r"Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1", 
         dest='ua', 
         help="Specific the User-Agent.")
+parser.add_argument('-O', '--wget-options', 
+        default="", 
+        dest='wgetopt', 
+        help="Specific the wget Parameter.")
 parser.add_argument('url', help='The URL of the playlist or video')
 
 #arguments here
@@ -168,9 +172,9 @@ if args.mkdir:
 print 'Current working directory:'
 print "\t", os.getcwd()
 os.system('''echo "#!/bin/bash
-%s -q%s %s \$@" > "%s.to" && chmod +x "%s.to"
+%s -q%s -O=\\"%s\\" \\"%s\\" \$@" > "%s.to" && chmod +x "%s.to"
         ''' % \
-        (__file__,args.quality,args.url,
+        (__file__,args.quality,args.wgetopt,args.url,
             album.R.replace('/',"_"),album.R.replace('/',"_")))
 
 def getFileExt(i):
@@ -208,7 +212,7 @@ for i in dl:
         print "Before we start, clean the unfinished file"
         os.system(rmcmd)
 
-    syscmd = 'wget -c "' + url + '" -U "' + args.ua + '" -O ".' + local + '"' 
+    syscmd = 'wget -c ' + args.wgetopt + ' "' + url + '" -U "' + args.ua + '" -O ".' + local + '"' 
     if args.debug:
         print syscmd
         continue

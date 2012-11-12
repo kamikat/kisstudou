@@ -156,6 +156,7 @@ class DownloadItem(object):
 
 album = DownloadItem(rl.pop(0))
 print 'Title:', album.R
+titlepath = album.R.replace("/", "_")
 dl = []
 for i in rl:
     dl.append(DownloadItem(i))
@@ -165,9 +166,9 @@ print
 import os,time
 
 if args.mkdir:
-    print 'Creating new dir:', album.R
-    os.system('mkdir "%s" 2>/dev/null 1>/dev/null' % album.R)
-    os.chdir(album.R)
+    print 'Creating new dir:', titlepath
+    os.system('mkdir "%s" 2>/dev/null 1>/dev/null' % titlepath)
+    os.chdir(titlepath)
 
 print 'Current working directory:'
 print "\t", os.getcwd()
@@ -175,7 +176,7 @@ os.system('''echo "#!/bin/bash
 %s -q%s -O=\\"%s\\" \\"%s\\" \$@" > "%s.to" && chmod +x "%s.to"
         ''' % \
         (__file__,args.quality,args.wgetopt,args.url,
-            album.R.replace('/',"_"),album.R.replace('/',"_")))
+            titlepath,titlepath))
 
 def getFileExt(i):
     u = i.U
@@ -194,7 +195,7 @@ fSuccess = True
 for i in dl:
     local = args.pattern.replace('%n',i.N) \
                 .replace('%p',i.P) \
-                .replace('%r',album.R) \
+                .replace('%r',titlepath) \
                 .replace('%x',i.X) \
                 .replace('/',"_") \
             + getFileExt(i)
@@ -240,7 +241,7 @@ for i in dl:
     time.sleep(args.wait + 0.1)
 
 if fSuccess:
-    os.system('rm "%s.to"' % (album.R.replace('/',"_")))
+    os.system('rm "%s.to"' % (titlepath))
 
 print "All tasks completed."
 exit(0)

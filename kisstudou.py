@@ -55,20 +55,20 @@ parser.add_argument('url', help='The URL of the video')
 global args
 args = parser.parse_args()
 
-formatMap = {
-        'normal': 'Normal',
-        'high': '360P',
-        'super': '480P',
-        'super2': '720P',
-        'real': 'REAL(DEFAULT)'
-        }
-resolution = formatMap.items()
+resolution = [
+        ('normal'    , 'Normal'),
+        ('high'      , '360P'),
+        ('super'     , '480P'),
+        ('super2'    , '720P'),
+        ('real'      , 'REAL(DEFAULT)')
+        ]
 
 print "Video address to parse:"
-print args.url
+print "\t%s" % (args.url)
 print "Quality:", resolution[args.quality][1]
 print "Pattern:", args.pattern, "+ *ext*"
-print 'User-Agent:', args.ua
+print "User-Agent:"
+print "\t%s" % (args.ua)
 
 if args.debug:
     print "Debug:", args.debug
@@ -118,24 +118,29 @@ filename = form('input[name="name"]').val()
 
 formats = form.parent().children('a')
 
-print "Video Title:\t%s" % (filename)
+print "Video Title:"
+print "\t%s" % (filename)
+print
 
 if args.debug:
-    print "Download Address"
+    print "Download Address:"
     for i in filelist:
         print i
+    print
 
 if len(formats) > 0:
     print "Optional format:"
 
-for i in formats:
-    f = pq(i)
-    href = f.attr('href')
-    text = f.text()
-    for k, v in formatMap.items():
-        if href.find(k) != -1:
-            print "\t%s[%s]" % (v, text),
-            break
+    for i in formats:
+        f = pq(i)
+        href = f.attr('href')
+        text = f.text()
+        for i in xrange(len(resolution)):
+            k, v = resolution[i]
+            if href.find(k) != -1:
+                print "\t%d - %s[%s]" % (i, v, text)
+                break
+    print
 
 if args.detect:
     exit(0)
@@ -159,6 +164,7 @@ os.system('''echo "#!/bin/bash
         ''' % \
         (__file__,args.quality,args.wgetopt,args.url,
             filepath,filepath))
+print
 
 def getFileExt(u):
     if u.find('f4v')!=-1:

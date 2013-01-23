@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import httplib
 import re
-from HTMLParser import HTMLParser
+import httplib
+import urllib
+from pyquery import PyQuery as pq
 
 parser = argparse.ArgumentParser(
         description='Download video resource from tudou.com',
@@ -17,12 +18,10 @@ parser.add_argument('-q', '--quality',
         Note: 
         If the specific resolution is not avaliable the lower nearest will be downloaded""")
 parser.add_argument('-o', '--output-pattern', 
-        default='%n', dest='pattern',
+        default='%n-%x', dest='pattern',
         help="""Define the output filename format(%%n by default):
         %%n - Video Name.
-        %%x - Index of the video in the album.
-        %%r - Album name.
-        %%p - Video source name.
+        %%x - Clip index of the video.
         """)
 parser.add_argument('-w', '--wait', 
         default=2, type=int, dest='wait',
@@ -56,31 +55,29 @@ parser.add_argument('url', help='The URL of the playlist or video')
 global args
 args = parser.parse_args()
 
-formatLevel = ['normal','high','super','super2','real']
-resolution = ['Normal','360P','480P','720P','REAL(DEFAULT)']
-parseFormat = {
-        'tudou':['256P','360P','480P','720P',u'原画'],
-        'youku':[u'标清',u'高清',u'超清','<Unava>','<Unava>'],
-        '__default__':[u'标清',u'清晰',u'高清',u'超清',u'原画']
+formatMap = {
+        'normal': 'Normal',
+        'high': '360P',
+        'super': '480P',
+        'super2': '720P',
+        'real': 'REAL(DEFAULT)'
         }
-server_info = {
-        'partial':['tudou'],
-        'retain_addr':['tudou'],
-        'split':['youku']
-        }
+resolution = formatMap.items()
 
-print "Album/video address to parse:"
+print "Video address to parse:"
 print args.url
-print "Quality:", resolution[args.quality]
+print "Quality:", resolution[args.quality][1]
 print "Pattern:", args.pattern, "+ *ext*"
 print 'User-Agent:', args.ua
+
 if args.debug:
     print "Debug:", args.debug
     print "New Dir.:", args.mkdir
 
 def parse(url, ua, fmt):
     http = httplib.HTTP("www.flvcd.com")
-    http.putrequest("GET", "/parse.php?format=%s&kw=%s" % (fmt, url))
+    http.putrequest("GET", "/parse.php?format=%s&kw=%s" % (fmt,
+        urllib.quote(url)))
     http.putheader("User-Agent", ua)
     http.putheader("Host", "www.flvcd.com")
     http.putheader("Accept", "*/*")
@@ -100,86 +97,70 @@ def parse(url, ua, fmt):
     html = html.decode('gbk')
     return html
 
-html = parse(args.url, args.ua, formatLevel[args.quality])
+html = parse(args.url, args.ua, resolution[args.quality][0])
 
 if html == -1:
     exit(1)
 
-print "Supported format:"
-listFormat = [0]
-for k, v in parseFormat.items():
-    if args.url.find(k)>0:
-        for f in xrange(0, len(v)):
-            if html.find(v[f])!=-1:
-                listFormat.append(f)
-        break
-print "\t",
-for v in listFormat:
-    print resolution[v],
-print
+q = pq(html)
+
+# Address Parsing Procedure
+
+form = q('form[name="mform"]')
+
+file_a = form.parent('td').parent('tr').prev().children().children('a')
+filelist = []
+for i in file_a:
+    a = pq(i)
+    filelist.append(a.attr('href'))
+
+filename = form('input[name="name"]').val()
+
+formats = form.parent().children('a')
+
+print "Video Title:\t%s" % (filename)
+
+if args.debug:
+    print "Download Address"
+    for i in filelist:
+        print i
+
+if len(formats) > 0:
+    print "Optional format:"
+
+for i in formats:
+    f = pq(i)
+    href = f.attr('href')
+    text = f.text()
+    for k, v in formatMap.items():
+        if href.find(k) != -1:
+            print "\t%s[%s]" % (v, text),
+            break
 
 if args.detect:
     exit(0)
 
-if not args.quality in listFormat:
-    while not args.quality in listFormat:
-        args.quality = args.quality-1
-    print "Real Quality:", resolution[args.quality]
-    print "Reparsing the address..."
-    html = parse(args.url, args.ua, formatLevel[args.quality])
-else:
-    print "Quality %s available..." % (resolution[args.quality])
+filepath = filename.replace("/", "_").encode('utf8')
 
-inf_start = '<input type="hidden" name="inf" value="'
-inf_end   = """">"""
-
-start = html.index(inf_start)
-end   = html.index(inf_end, start)
-
-inf = html[start+len(inf_start):end].encode("utf-8")
-
-if args.debug:
-    print "HTML Text:"
-    print inf
-
-
-print 'Get video infomation:'
-rl =  inf.strip().replace('<&>\n','').split("<$>\n")
-
-class DownloadItem(object):
-    def __init__(self, data):
-        self.image = data
-    def __getattr__(self, key):
-        return re.search('(<'+ key +'>)([^<>]*)\n', self.image).group(2)
-    def __str__(self):
-        return self.image
-
-album = DownloadItem(rl.pop(0))
-print 'Title:', album.R
-titlepath = album.R.replace("/", "_")
-dl = []
-for i in rl:
-    dl.append(DownloadItem(i))
-print "Found %d items in the list to be downloaded" % len(dl)
+print "Found %d video clip(s) to download" % len(filelist)
 print
 
-import os,time
+import os, time
 
 if args.mkdir:
-    print 'Creating new dir:', titlepath
-    os.system('mkdir "%s" 2>/dev/null 1>/dev/null' % titlepath)
-    os.chdir(titlepath)
+    print 'Creating new dir:', filepath
+    os.system('mkdir "%s" 2>/dev/null 1>/dev/null' % filepath)
+    os.chdir(filepath)
 
-print 'Current working directory:'
+print 'Current directory:'
 print "\t", os.getcwd()
 os.system('''echo "#!/bin/bash
 %s -q%s -O=\\"%s\\" \\"%s\\" \$@" > "%s.to" && chmod +x "%s.to"
         ''' % \
         (__file__,args.quality,args.wgetopt,args.url,
-            titlepath,titlepath))
+            filepath,filepath))
 
-def getFileExt(i):
-    u = i.U
+def getFileExt(u):
     if u.find('f4v')!=-1:
         return '.f4v'
     if u.find('mp4')!=-1:
@@ -192,16 +173,14 @@ def getFileExt(i):
 
 fSuccess = True
 
-for i in dl:
-    local = args.pattern.replace('%n',i.N) \
-                .replace('%p',i.P) \
-                .replace('%r',titlepath) \
-                .replace('%x',i.X) \
+for i in xrange(len(filelist)):
+    url = filelist[i]
+    local = args.pattern.replace('%n',filepath) \
+                .replace('%x','%04d' % (i + 1)) \
                 .replace('/',"_") \
-            + getFileExt(i)
+            + getFileExt(url)
 
     print "Download", local, "..."
-    url = i.U
 
     if os.path.exists(local):
         print "Target already exists, skip to next file!"
@@ -241,7 +220,7 @@ for i in dl:
     time.sleep(args.wait + 0.1)
 
 if fSuccess:
-    os.system('rm "%s.to"' % (titlepath))
+    os.system('rm "%s.to"' % (filepath))
 
 print "All tasks completed."
 exit(0)

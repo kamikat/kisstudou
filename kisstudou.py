@@ -38,9 +38,9 @@ parser.add_argument('-c', '--clean',
 parser.add_argument('-m', '--merge-split', 
         default=False, dest='merge', action='store_true',
         help="Auto merge videos together(Not Implemented)")
-parser.add_argument('-s', '--format-spider', 
+parser.add_argument('-s', '--spider', 
         default=False, dest='detect', action='store_true',
-        help="Only detect the avaliable format but not download.")
+        help="Only detect for video information but not download.")
 parser.add_argument('-U', '--user-agent', 
         default=r"Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1", 
         dest='ua', 
@@ -49,7 +49,7 @@ parser.add_argument('-O', '--wget-options',
         default="", 
         dest='wgetopt', 
         help="Specific the wget Parameter.")
-parser.add_argument('url', help='The URL of the playlist or video')
+parser.add_argument('url', help='The URL of the video')
 
 #arguments here
 global args

@@ -18,10 +18,11 @@ parser.add_argument('-q', '--quality',
         Note: 
         If the specific resolution is not avaliable the lower nearest will be downloaded""")
 parser.add_argument('-o', '--output-pattern', 
-        default='%n-%x', dest='pattern',
+        default='%{n}%-{x}', dest='pattern',
         help="""Define the output filename format(%%n by default):
-        %%n - Video Name.
-        %%x - Clip index of the video.
+        %%{n} - Video name section.
+        %%{x} - Clip index of the video.
+        e.g. %{n}%-{x} will produce filename-0001.vod or filename.vod
         """)
 parser.add_argument('-w', '--wait', 
         default=2, type=int, dest='wait',
@@ -179,12 +180,27 @@ def getFileExt(u):
 
 fSuccess = True
 
+def sformat(string, symbol, value):
+    tokens = string.split('%')
+    filtered = []
+    for s in tokens:
+        if s.find('{' + symbol + '}') < 0:
+            filtered.append(s)
+        else:
+            if value:
+                filtered.append(s.replace('{' + symbol + '}', value)) 
+    return '%'.join(filtered)
+
 for i in xrange(len(filelist)):
     url = filelist[i]
-    local = args.pattern.replace('%n',filepath) \
-                .replace('%x','%04d' % (i + 1)) \
-                .replace('/',"_") \
-            + getFileExt(url)
+
+    local = args.pattern
+    local = sformat(local, 'n', filepath)
+    if len(filelist) > 1:
+        local = sformat(local, 'x', '%04d' % (i + 1))
+    else:
+        local = sformat(local, 'x', None)
+    local = local.replace('%',"").replace('/',"_") + getFileExt(url)
 
     print "Download", local, "..."
 

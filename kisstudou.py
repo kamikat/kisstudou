@@ -119,6 +119,14 @@ filename = form('input[name="name"]').val()
 
 formats = form.parent().children('a')
 
+if not filename:
+    print """
+    Video is not available for download. 
+    Check http://www.flvcd.com/url.php for available sites.
+    Or the video is protected from playing by guests.
+    """
+    exit(0)
+
 print "Video Title:"
 print "\t%s" % (filename)
 print

@@ -51,7 +51,7 @@ to pass parameter to `wget`
 
     kisstudou -O "--limit-rate=150k" [url]
 
-Licence
+License
 -------
 
 Copyright 2013 Shinone<imandry.c@gmail.com>

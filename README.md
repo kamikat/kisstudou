@@ -54,7 +54,7 @@ to pass parameter to `wget`
 License
 -------
 
-Copyright 2013 Shinone<imandry.c@gmail.com>
+Copyright 2013 Shinone&lt;imandry.c@gmail.com&gt;
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

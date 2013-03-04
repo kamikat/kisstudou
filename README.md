@@ -1,5 +1,5 @@
-Introduction
-============
+Kisstudou
+=========
 
 Kisstudou is a python implementation of the flvcd.com client
 
@@ -13,7 +13,7 @@ Refer to another repository
 for this function
 
 Installation
-============
+------------
 
 Kisstudou depend on Python 2.7 and PyQuery
 
@@ -24,7 +24,7 @@ Using following code to install pyquery
 Then, put the kisstudou script to your PATH
 
 Usage
-=====
+-----
 
 Using the following command
 
@@ -52,7 +52,7 @@ to pass parameter to `wget`
     kisstudou -O "--limit-rate=150k" [url]
 
 Licence
-=======
+-------
 
 Copyright 2013 Shinone<imandry.c@gmail.com>
 

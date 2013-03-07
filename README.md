@@ -9,7 +9,7 @@ in a few days.
 
 **Automatic merging of sliptted clips has not yet been developed**. 
 Refer to another repository 
-[FLVCopycat](https://github.com/hanenoshino/FLVCopycat)
+[FLVCopycat](https://github.com/shinohane/FLVCopycat)
 for this function
 
 Installation
@@ -54,7 +54,7 @@ to pass parameter to `wget`
 License
 -------
 
-Copyright 2013 Shinone&lt;imandry.c@gmail.com&gt;
+Copyright 2013 Shinohane&lt;imandry.c@gmail.com&gt;
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

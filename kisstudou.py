@@ -10,45 +10,45 @@ from pyquery import PyQuery as pq
 parser = argparse.ArgumentParser(
         description='Download video resource from tudou.com',
         epilog="Parse the url to video address using flvcd.com")
-parser.add_argument('-q', '--quality', 
+parser.add_argument('-q', '--quality',
         default=4, type=int, dest='quality',
-        help="""Quality of source to download, 
-        values in 0(256P),1(360P),2(480P),3(720P),4(REAL). 
-        REAL by default. 
-        Note: 
+        help="""Quality of source to download,
+        values in 0(256P),1(360P),2(480P),3(720P),4(REAL).
+        REAL by default.
+        Note:
         If the specific resolution is not avaliable the lower nearest will be downloaded""")
-parser.add_argument('-o', '--output-pattern', 
+parser.add_argument('-o', '--output-pattern',
         default='%{n}%-{x}', dest='pattern',
         help="""Define the output filename format(%%n by default):
         %%{n} - Video name section.
         %%{x} - Clip index of the video.
         e.g. %{n}%-{x} will produce filename-0001.vod or filename.vod
         """)
-parser.add_argument('-w', '--wait', 
+parser.add_argument('-w', '--wait',
         default=2, type=int, dest='wait',
         help="Set the time to wait between start next task(in second, default 2).")
-parser.add_argument('-D', '--debug', 
+parser.add_argument('-D', '--debug',
         default=False, dest='debug', action='store_true',
         help="Run command in debug mode")
-parser.add_argument('-d', '--new-directory', 
+parser.add_argument('-d', '--new-directory',
         default=False, dest='mkdir', action='store_true',
         help="Create new directory for the download")
-parser.add_argument('-c', '--clean', 
+parser.add_argument('-c', '--clean',
         default=False, dest='clean', action='store_true',
         help="Clean old file before start(for sites unavaliable for partial)")
-parser.add_argument('-m', '--merge-split', 
+parser.add_argument('-m', '--merge-split',
         default=False, dest='merge', action='store_true',
         help="Auto merge videos together(Not Implemented)")
-parser.add_argument('-s', '--spider', 
+parser.add_argument('-s', '--spider',
         default=False, dest='detect', action='store_true',
         help="Only detect for video information but not download.")
-parser.add_argument('-U', '--user-agent', 
-        default=r"Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1", 
-        dest='ua', 
+parser.add_argument('-U', '--user-agent',
+        default=r"Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
+        dest='ua',
         help="Specific the User-Agent.")
-parser.add_argument('-O', '--wget-options', 
-        default="", 
-        dest='wgetopt', 
+parser.add_argument('-O', '--wget-options',
+        default="",
+        dest='wgetopt',
         help="Specific the wget Parameter.")
 parser.add_argument('url', help='The URL of the video')
 
@@ -121,7 +121,7 @@ formats = form.parent().children('a')
 
 if not filename:
     print """
-    Video is not available for download. 
+    Video is not available for download.
     Check http://www.flvcd.com/url.php for available sites.
     Or the video is protected from playing by guests.
     """
@@ -196,7 +196,7 @@ def sformat(string, symbol, value):
             filtered.append(s)
         else:
             if value:
-                filtered.append(s.replace('{' + symbol + '}', value)) 
+                filtered.append(s.replace('{' + symbol + '}', value))
     return '%'.join(filtered)
 
 for i in xrange(len(filelist)):
@@ -222,7 +222,7 @@ for i in xrange(len(filelist)):
         print "Before we start, clean the unfinished file"
         os.system(rmcmd)
 
-    syscmd = 'wget -c ' + args.wgetopt + ' "' + url + '" -U "' + args.ua + '" -O ".' + local + '"' 
+    syscmd = 'wget -c ' + args.wgetopt + ' "' + url + '" -U "' + args.ua + '" -O ".' + local + '"'
     if args.debug:
         print syscmd
         continue

@@ -183,7 +183,7 @@ def getFileExt(u):
     if u.find('flv')!=-1:
         return '.flv'
     if u.find('hlv')!=-1:
-        return '.hlv'
+        return '.flv'
     return ".video"
 
 fSuccess = True

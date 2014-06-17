@@ -4,13 +4,11 @@ Kisstudou
 Kisstudou is a python implementation of the flvcd.com client
 
 Kisstodou has not yet been tested under windows, if you encountered
-an error, please report in the issue list. Fix should be available 
+an error, please report in the issue list. Fix should be available
 in a few days.
 
-**Automatic merging of sliptted clips has not yet been developed**. 
-Refer to another repository 
-[FLVCopycat](https://github.com/shinohane/FLVCopycat)
-for this function
+**Automatic merging of sliptted clips has not yet been developed**.
+See [flvcopycat](https://github.com/kirisetsz/flvcopycat) for this function
 
 Installation
 ------------
@@ -54,7 +52,7 @@ to pass parameter to `wget`
 License
 -------
 
-Copyright 2013 Shinohane&lt;imandry.c@gmail.com&gt;
+Copyright 2014 Kirisetsz&lt;kirisetsz@gmail.com&gt;
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -65,6 +63,6 @@ You may obtain a copy of the License at
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and 
+See the License for the specific language governing permissions and
 limitations under the License.
 
